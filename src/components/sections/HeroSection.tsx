@@ -13,12 +13,7 @@ const HeroSection = ({
   title = "Empowering Your IT Infrastructure",
   subtitle = "Women-owned IT consulting firm delivering innovative solutions for your business technology needs",
   ctaText = "Book a Consultation",
-  onCtaClick = () => {
-    const contactSection = document.getElementById("contact");
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: "smooth" });
-    }
-  },
+  onCtaClick,
 }: HeroSectionProps) => {
   return (
     <section className="relative w-full min-h-[600px] bg-[#C7C1D8] text-[#1a365d] flex items-center justify-center px-4 sm:px-6 lg:px-8">
