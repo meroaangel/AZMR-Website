@@ -13,6 +13,14 @@ if (process.env.TEMPO === "true") {
 // https://vitejs.dev/config/
 export default defineConfig({
   base: "/",
+  build: {
+    assetsDir: "assets",
+    rollupOptions: {
+      output: {
+        assetFileNames: "assets/[name].[ext]",
+      },
+    },
+  },
   optimizeDeps: {
     entries: ["src/main.tsx", "src/tempobook/**/*"],
   },
