@@ -1,4 +1,5 @@
 import React from "react";
+import emailjs from "@emailjs/browser";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -31,7 +32,34 @@ interface ContactSectionProps {
 }
 
 const ContactSection = ({
-  onSubmit = (data) => console.log("Form submitted:", data),
+  onSubmit = async (data) => {
+    try {
+      const response = await emailjs.send(
+        "service_fh5bxw9",
+        "template_tzj8b6s",
+        {
+          from_name: data.name,
+          from_email: data.email,
+          company: data.company,
+          message: data.requirements,
+          to_name: "AZMR Consulting", // Change this to your name
+        },
+        "atglY-4HtQvi-Nglv",
+      );
+
+      if (response.status === 200) {
+        alert("Thank you for your message! We will get back to you soon.");
+        return true;
+      } else {
+        throw new Error("Failed to submit form");
+      }
+    } catch (error) {
+      alert(
+        "Sorry, there was an error submitting your message. Please try again.",
+      );
+      return false;
+    }
+  },
   isSubmitting = false,
 }: ContactSectionProps) => {
   const form = useForm<ContactFormValues>({
@@ -44,8 +72,11 @@ const ContactSection = ({
     },
   });
 
-  const handleSubmit = (data: ContactFormValues) => {
-    onSubmit(data);
+  const handleSubmit = async (data: ContactFormValues) => {
+    const success = await onSubmit(data);
+    if (success) {
+      form.reset();
+    }
   };
 
   return (
