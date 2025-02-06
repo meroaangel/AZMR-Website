@@ -65,7 +65,12 @@ const defaultMenuItems = [
 const Navbar = ({
   logo = "AZMR Consulting",
   menuItems = defaultMenuItems,
-  onConsultationClick = () => console.log("Book Consultation clicked"),
+  onConsultationClick = () => {
+    const contactSection = document.getElementById("contact");
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: "smooth" });
+    }
+  },
 }: NavbarProps) => {
   return (
     <nav className="w-full h-20 px-4 md:px-6 bg-white border-b border-gray-200 fixed top-0 z-50">
