@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import emailjs from "@emailjs/browser";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,13 +27,13 @@ const formSchema = z.object({
 type ContactFormValues = z.infer<typeof formSchema>;
 
 interface ContactSectionProps {
-  onSubmit?: (data: ContactFormValues) => void;
-  isSubmitting?: boolean;
+  onSubmit?: (data: ContactFormValues) => Promise<boolean>;
 }
 
 const ContactSection = ({
   onSubmit = async (data) => {
     try {
+      console.log("Sending email with data:", data);
       const response = await emailjs.send(
         "service_fh5bxw9",
         "template_tzj8b6s",
@@ -42,25 +42,26 @@ const ContactSection = ({
           from_email: data.email,
           company: data.company,
           message: data.requirements,
-          to_name: "AZMR Consulting", // Change this to your name
+          to_name: "AZMR Consulting",
         },
         "atglY-4HtQvi-Nglv",
       );
 
+      console.log("EmailJS response:", response);
       if (response.status === 200) {
         alert("Thank you for your message! We will get back to you soon.");
         return true;
       } else {
-        throw new Error("Failed to submit form");
+        throw new Error(`Failed to submit form: ${response.status}`);
       }
     } catch (error) {
+      console.error("EmailJS error:", error);
       alert(
         "Sorry, there was an error submitting your message. Please try again.",
       );
       return false;
     }
   },
-  isSubmitting = false,
 }: ContactSectionProps) => {
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(formSchema),
@@ -72,10 +73,20 @@ const ContactSection = ({
     },
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleSubmit = async (data: ContactFormValues) => {
-    const success = await onSubmit(data);
-    if (success) {
-      form.reset();
+    try {
+      setIsSubmitting(true);
+      const success = await onSubmit(data);
+      if (success) {
+        form.reset();
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+      alert("An error occurred while submitting the form. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
