@@ -30,9 +30,22 @@ interface ContactSectionProps {
   onSubmit?: (data: ContactFormValues) => Promise<boolean>;
 }
 
-const ContactSection = ({
-  onSubmit = async (data) => {
+const ContactSection = ({}: ContactSectionProps) => {
+  const form = useForm<ContactFormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      company: "",
+      requirements: "",
+    },
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = form.handleSubmit(async (data: ContactFormValues) => {
     try {
+      setIsSubmitting(true);
       console.log("Sending email with data:", data);
       const response = await emailjs.send(
         "service_fh5bxw9",
@@ -50,7 +63,7 @@ const ContactSection = ({
       console.log("EmailJS response:", response);
       if (response.status === 200) {
         alert("Thank you for your message! We will get back to you soon.");
-        return true;
+        form.reset();
       } else {
         throw new Error(`Failed to submit form: ${response.status}`);
       }
@@ -59,36 +72,10 @@ const ContactSection = ({
       alert(
         "Sorry, there was an error submitting your message. Please try again.",
       );
-      return false;
-    }
-  },
-}: ContactSectionProps) => {
-  const form = useForm<ContactFormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      company: "",
-      requirements: "",
-    },
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (data: ContactFormValues) => {
-    try {
-      setIsSubmitting(true);
-      const success = await onSubmit(data);
-      if (success) {
-        form.reset();
-      }
-    } catch (error) {
-      console.error("Form submission error:", error);
-      alert("An error occurred while submitting the form. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
-  };
+  });
 
   return (
     <section
@@ -107,10 +94,7 @@ const ContactSection = ({
         </div>
 
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-6"
-          >
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
