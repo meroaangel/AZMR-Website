@@ -65,13 +65,19 @@ const defaultMenuItems = [
 const Navbar = ({
   logo = "AZMR Consulting",
   menuItems = defaultMenuItems,
-  onConsultationClick = () => {
-    const contactSection = document.getElementById("contact");
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: "smooth" });
-    }
-  },
+  onConsultationClick,
 }: NavbarProps) => {
+  const handleNavClick = (href: string) => {
+    const sectionId = href.replace("#", "");
+    const element = document.getElementById(sectionId);
+    if (element) {
+      window.scrollTo({
+        top: element.offsetTop - 80,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
     <nav className="w-full h-20 px-4 md:px-6 bg-white border-b border-gray-200 fixed top-0 z-50">
       <div className="max-w-7xl mx-auto h-full flex items-center justify-between">
@@ -100,17 +106,7 @@ const Navbar = ({
                                   href={subItem.href}
                                   onClick={(e) => {
                                     e.preventDefault();
-                                    const sectionId = subItem.href.replace(
-                                      "#",
-                                      "",
-                                    );
-                                    const element =
-                                      document.getElementById(sectionId);
-                                    if (element) {
-                                      element.scrollIntoView({
-                                        behavior: "smooth",
-                                      });
-                                    }
+                                    handleNavClick(subItem.href);
                                   }}
                                   className={cn(
                                     "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-slate-100 focus:bg-slate-100",
@@ -137,11 +133,7 @@ const Navbar = ({
                         href={item.href}
                         onClick={(e) => {
                           e.preventDefault();
-                          const sectionId = item.href.replace("#", "");
-                          const element = document.getElementById(sectionId);
-                          if (element) {
-                            element.scrollIntoView({ behavior: "smooth" });
-                          }
+                          handleNavClick(item.href);
                         }}
                         className="text-[#718096] hover:text-[#1a365d] px-3 py-2 text-sm font-medium"
                       >

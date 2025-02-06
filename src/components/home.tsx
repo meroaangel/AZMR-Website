@@ -12,27 +12,30 @@ interface HomeProps {
 }
 
 const Home = ({
-  onConsultationClick = () => console.log("Consultation requested"),
   onContactSubmit = (data) => console.log("Contact form submitted:", data),
 }: HomeProps) => {
+  const handleConsultation = () => {
+    const contactSection = document.getElementById("contact");
+    if (contactSection) {
+      window.scrollTo({
+        top: contactSection.offsetTop - 80,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
-      <Navbar onConsultationClick={onConsultationClick} />
+      <Navbar onConsultationClick={handleConsultation} />
 
-      {/* Add top margin to account for fixed navbar */}
       <main className="pt-20">
-        <HeroSection onCtaClick={onConsultationClick} />
-
+        <HeroSection onCtaClick={handleConsultation} />
         <ServicesGrid />
-
         <WhyChooseUs />
-
         <SocialProof />
-
         <ContactSection onSubmit={onContactSubmit} />
       </main>
 
-      {/* Simple footer */}
       <footer className="bg-[#C7C1D8] text-[#1a365d] py-8 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <p className="text-sm">
